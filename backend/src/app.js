@@ -11,46 +11,41 @@ const notificationRoutes = require("./routes/notification.routes");
 
 const { notFound, errorHandler } = require("./middleware/error.middleware");
 
-/*
-  app.js configures our Express application.
-
-  server.js starts the server.
-*/
-
 const app = express();
 
-/*
-  Security headers.
-*/
 app.use(helmet());
-
-/*
-  Log API requests in development/production logs.
-*/
 app.use(morgan("dev"));
 
-/*
-  Allow frontend to call backend.
-*/
+const allowedOrigins = [
+  "http://localhost:3000",
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: function (origin, callback) {
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      if (origin.endsWith(".vercel.app")) {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
     credentials: true,
   })
 );
 
-/*
-  Body parsers.
-*/
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-/*
-  Root route.
-
-  This appears when someone opens the Render backend URL directly.
-*/
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
@@ -59,12 +54,6 @@ app.get("/", (req, res) => {
   });
 });
 
-/*
-  Health check route.
-
-  Test:
-  /api/health
-*/
 app.get("/api/health", (req, res) => {
   res.status(200).json({
     success: true,
@@ -72,17 +61,11 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-/*
-  Main API routes.
-*/
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/social", socialRoutes);
 app.use("/api/notifications", notificationRoutes);
 
-/*
-  Error handlers.
-*/
 app.use(notFound);
 app.use(errorHandler);
 
