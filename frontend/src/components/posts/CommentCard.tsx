@@ -1,0 +1,4 @@
+import { Comment } from "@/types";
+import { formatRelativeTime } from "@/utils/date";
+import Link from "next/link";
+export default function CommentCard({ comment }: { comment: Comment }){ return <div className="border-t border-slate-800 p-4"><div className="flex gap-3"><Link href={`/profile/${comment.authorUsername}`} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-700 font-bold">{comment.authorName.charAt(0).toUpperCase()}</Link><div><p className="text-sm"><Link href={`/profile/${comment.authorUsername}`} className="font-semibold hover:underline">{comment.authorName}</Link> <span className="text-slate-500">@{comment.authorUsername} · {formatRelativeTime(comment.createdAt)}</span></p><p className="mt-1 text-slate-200">{comment.text}</p></div></div></div>; }

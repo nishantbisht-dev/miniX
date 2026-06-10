@@ -1,0 +1,1 @@
+export default function RightSidebar(){ return <aside className="sticky top-0 hidden h-screen p-5 lg:block"><div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-5"><h2 className="font-bold">What is happening</h2><div className="mt-4 space-y-3 text-sm text-slate-400"><p>#Nextjs</p><p>#FirebaseAuth</p><p>#MongoDB</p><p>#BuildInPublic</p></div></div></aside>; }

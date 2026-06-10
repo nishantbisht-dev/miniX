@@ -1,0 +1,7 @@
+"use client";
+import { markNotificationAsRead } from "@/lib/notifications";
+import { Notification } from "@/types";
+import { formatRelativeTime } from "@/utils/date";
+import { Bell, Heart, MessageCircle, UserPlus } from "lucide-react";
+import Link from "next/link";
+export default function NotificationCard({ notification }: { notification: Notification }){ const Icon=notification.type==="like"?Heart:notification.type==="comment"?MessageCircle:notification.type==="follow"?UserPlus:Bell; const href=notification.postId&&notification.type!=="follow"?`/post/${notification.postId}`:`/profile/${notification.senderUsername}`; async function click(){ if(!notification.read) await markNotificationAsRead(notification.id); } return <Link href={href} onClick={click} className={`block border-b border-slate-800 p-5 hover:bg-slate-900/50 ${notification.read?"":"bg-sky-500/5"}`}><div className="flex gap-4"><div className={`flex h-10 w-10 items-center justify-center rounded-full ${notification.read?"bg-slate-800":"bg-sky-500"}`}><Icon className="h-5 w-5"/></div><div><p className="text-sm"><b>{notification.senderName}</b> {notification.text}</p><p className="mt-1 text-xs text-slate-500">@{notification.senderUsername} · {formatRelativeTime(notification.createdAt)}</p>{!notification.read&&<span className="mt-3 inline-block rounded-full bg-sky-500 px-2 py-1 text-xs font-semibold">New</span>}</div></div></Link>; }

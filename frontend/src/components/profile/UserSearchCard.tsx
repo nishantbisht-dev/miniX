@@ -1,0 +1,3 @@
+import { UserProfile } from "@/types";
+import Link from "next/link";
+export default function UserSearchCard({ user }: { user: UserProfile }){ return <Link href={`/profile/${user.username}`} className="block border-b border-slate-800 p-5 hover:bg-slate-900/50"><div className="flex gap-4"><div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-sky-500 font-bold">{user.name.charAt(0).toUpperCase()}</div><div className="min-w-0 flex-1"><p className="truncate font-semibold">{user.name}</p><p className="text-sm text-slate-500">@{user.username}</p><p className="mt-2 line-clamp-2 text-sm text-slate-400">{user.bio||"No bio added yet."}</p><p className="mt-2 text-xs text-slate-500">{user.followersCount} followers</p></div></div></Link>; }

@@ -1,0 +1,1 @@
+export default function FeedHeader(){ return <header className="sticky top-0 z-40 border-b border-slate-800 bg-slate-950/90 px-5 py-4 backdrop-blur"><h1 className="text-xl font-bold">Home</h1><p className="mt-1 text-sm text-slate-500">Share what you are building.</p></header>; }
