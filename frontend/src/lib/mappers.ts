@@ -2,8 +2,17 @@ import { Comment, Notification, Post, UserProfile } from "@/types";
 
 export function mapUser(user: any): UserProfile {
   return {
-    uid: user._id, firebaseUid: user.firebaseUid, name: user.name, username: user.username,
-    email: user.email, bio: user.bio || "", photoURL: user.avatar || "", coverURL: user.coverImage || "",
+    uid: user._id, 
+    firebaseUid: user.firebaseUid, 
+    name: user.name, 
+    username: user.username,
+    email: user.email, 
+    bio: user.bio || "", 
+    photoURL: user.avatar || "", 
+    coverURL: user.coverImage || "",
+    browserNotificationsEnabled: user.browserNotificationsEnabled !== undefined
+    ? user.browserNotificationsEnabled
+    : true,
     followersCount: user.followersCount || 0, followingCount: user.followingCount || 0, postsCount: user.postsCount || 0,
     createdAt: user.createdAt ? new Date(user.createdAt) : new Date(), updatedAt: user.updatedAt ? new Date(user.updatedAt) : new Date(),
   };

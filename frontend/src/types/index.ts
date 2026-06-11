@@ -7,6 +7,7 @@ export type UserProfile = {
   bio: string;
   photoURL: string;
   coverURL: string;
+  browserNotificationsEnabled: boolean;
   followersCount: number;
   followingCount: number;
   postsCount: number;

@@ -18,6 +18,10 @@ const userSchema = new mongoose.Schema(
     bio: { type: String, default: "", maxlength: 160 },
     avatar: { type: String, default: "" },
     coverImage: { type: String, default: "" },
+    browserNotificationsEnabled: {
+      type: Boolean,
+      default: true,
+    },
     followersCount: { type: Number, default: 0 },
     followingCount: { type: Number, default: 0 },
     postsCount: { type: Number, default: 0 },

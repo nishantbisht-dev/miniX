@@ -51,21 +51,37 @@ async function updateCurrentUser(req, res, next) {
       res.status(404);
       throw new Error("User profile not found");
     }
-    const { name, username, bio } = req.body;
+    const { name, username, bio, browserNotificationsEnabled } = req.body;
+
     const user = await User.findById(req.user._id);
 
     if (username && username.toLowerCase().trim() !== user.username) {
       const taken = await User.findOne({ username: username.toLowerCase().trim() });
+
       if (taken) {
         res.status(400);
         throw new Error("Username already taken");
       }
+
       user.username = username.toLowerCase().trim();
     }
+
     if (name !== undefined) user.name = name.trim();
+
     if (bio !== undefined) user.bio = bio.trim();
 
+    /*
+  Update browser notification preference.
+
+  true  = user wants browser popup notifications
+  false = user disabled them
+*/
+    if (browserNotificationsEnabled !== undefined) {
+      user.browserNotificationsEnabled = Boolean(browserNotificationsEnabled);
+    }
+
     const updatedUser = await user.save();
+    
     res.status(200).json({ success: true, message: "Profile updated", user: updatedUser });
   } catch (error) {
     next(error);
