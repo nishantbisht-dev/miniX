@@ -9,6 +9,7 @@ const postRoutes = require("./routes/post.routes");
 const socialRoutes = require("./routes/social.routes");
 const notificationRoutes = require("./routes/notification.routes");
 const otpRoutes = require("./routes/otp.routes");
+const loginHistoryRoutes = require("./routes/loginHistory.routes");
 
 const { notFound, errorHandler } = require("./middleware/error.middleware");
 
@@ -67,6 +68,7 @@ app.use("/api/posts", postRoutes);
 app.use("/api/social", socialRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/otp", otpRoutes);
+app.use("/api/login-history", loginHistoryRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
