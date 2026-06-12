@@ -43,19 +43,19 @@ export default function LoginHistoryList() {
 
   if (loading) {
     return (
-      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5 text-slate-400">
+      <section className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-slate-400">
         Loading login history...
       </section>
     );
   }
 
   return (
-    <section className="rounded-2xl border border-slate-800 bg-slate-900">
+    <section className="rounded-2xl border border-slate-800 bg-slate-950">
       <div className="border-b border-slate-800 p-5">
         <h2 className="text-lg font-bold text-white">Login History</h2>
         <p className="mt-1 text-sm text-slate-400">
-          Recent browsers, devices, and IP addresses used to access your
-          account.
+          Recent browsers, devices, operating systems, and IP addresses used to
+          access your account.
         </p>
       </div>
 
