@@ -39,7 +39,7 @@ export default function ProfilePage() {
           <div className="border-b border-slate-800 p-5">
             <h1 className="text-2xl font-bold text-white">Profile Settings</h1>
             <p className="mt-1 text-sm text-slate-400">
-              Update your profile details and notification preferences.
+              Update your profile and view account activity.
             </p>
           </div>
 
