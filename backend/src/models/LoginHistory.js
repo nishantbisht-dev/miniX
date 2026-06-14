@@ -1,16 +1,5 @@
 const mongoose = require("mongoose");
 
-/*
-  LoginHistory stores every login/session record of a user.
-
-  It helps users see:
-  - which browser was used
-  - which OS was used
-  - which device was used
-  - which IP address was used
-  - when login happened
-*/
-
 const loginHistorySchema = new mongoose.Schema(
   {
     user: {
@@ -44,6 +33,11 @@ const loginHistorySchema = new mongoose.Schema(
       type: String,
       enum: ["success", "blocked"],
       default: "success",
+    },
+
+    reason: {
+      type: String,
+      default: "",
     },
   },
   {

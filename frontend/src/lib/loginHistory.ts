@@ -7,6 +7,7 @@ export type LoginHistoryItem = {
   device: "desktop" | "mobile" | "tablet" | "unknown";
   ipAddress: string;
   status: "success" | "blocked";
+  reason?: string;
   createdAt: string;
 };
 

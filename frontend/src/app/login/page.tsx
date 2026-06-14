@@ -1,233 +1,48 @@
 "use client";
 
-import Button from "@/components/common/Button";
-import Input from "@/components/common/Input";
-import { auth } from "@/lib/firebase";
-import {
-  checkLoginSecurity,
-  completeChromeLogin,
-} from "@/lib/loginSecurity";
-import { signInWithEmailAndPassword, signOut } from "firebase/auth";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import toast from "react-hot-toast";
+import EditProfileForm from "@/components/profile/EditProfileForm";
+import LoginHistoryList from "@/components/profile/LoginHistoryList";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { Loader2 } from "lucide-react";
 
-/*
-  LoginPage handles normal Firebase login and internship-specific
-  login security rules.
+export default function SettingsPage() {
+  const { profile, profileLoading } = useUserProfile();
 
-  Flow:
-  1. User logs in with Firebase email/password.
-  2. Backend checks browser/device/IP.
-  3. Mobile outside 10 AM - 1 PM IST gets blocked.
-  4. Chrome requires email OTP.
-  5. Edge and other browsers are allowed directly.
-*/
-
-export default function LoginPage() {
-  const router = useRouter();
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const [otp, setOtp] = useState("");
-  const [showOtpStep, setShowOtpStep] = useState(false);
-
-  const [loading, setLoading] = useState(false);
-  const [otpLoading, setOtpLoading] = useState(false);
-
-  async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (!email.trim()) {
-      toast.error("Email is required");
-      return;
-    }
-
-    if (!password.trim()) {
-      toast.error("Password is required");
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      /*
-        Step 1:
-        Firebase login.
-      */
-      await signInWithEmailAndPassword(auth, email, password);
-
-      /*
-        Step 2:
-        Backend applies internship login rules.
-      */
-      const securityResult = await checkLoginSecurity();
-
-      /*
-        If mobile login is blocked, sign user out immediately.
-      */
-      if (securityResult.action === "blocked") {
-        await signOut(auth);
-        toast.error(securityResult.message);
-        return;
-      }
-
-      /*
-        If Chrome login needs OTP, show OTP input.
-      */
-      if (securityResult.action === "requires_otp") {
-        setShowOtpStep(true);
-        toast.success("OTP sent to your registered email");
-        return;
-      }
-
-      /*
-        If allowed, login is complete.
-      */
-      toast.success("Login successful");
-      router.push("/");
-    } catch (error: any) {
-      console.error(error);
-
-      if (error.code === "auth/invalid-credential") {
-        toast.error("Invalid email or password");
-        return;
-      }
-
-      if (error.code === "auth/user-not-found") {
-        toast.error("User not found");
-        return;
-      }
-
-      if (error.code === "auth/wrong-password") {
-        toast.error("Wrong password");
-        return;
-      }
-
-      if (error.message) {
-        toast.error(error.message);
-        return;
-      }
-
-      toast.error("Login failed");
-    } finally {
-      setLoading(false);
-    }
+  if (profileLoading) {
+    return (
+      <div className="border-b border-slate-800 p-8 text-white">
+        <div className="flex items-center gap-2 text-slate-400">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          Loading settings...
+        </div>
+      </div>
+    );
   }
 
-  async function handleVerifyOtp(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (!otp.trim()) {
-      toast.error("OTP is required");
-      return;
-    }
-
-    if (otp.trim().length !== 6) {
-      toast.error("OTP must be 6 digits");
-      return;
-    }
-
-    try {
-      setOtpLoading(true);
-
-      /*
-        Complete Chrome login after OTP verification.
-      */
-      const result = await completeChromeLogin(otp.trim());
-
-      toast.success(result.message || "Login verified successfully");
-      router.push("/");
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.message || "OTP verification failed");
-    } finally {
-      setOtpLoading(false);
-    }
+  if (!profile) {
+    return (
+      <div className="border-b border-slate-800 p-8 text-white">
+        <h1 className="text-2xl font-bold">Settings</h1>
+        <p className="mt-2 text-slate-400">
+          Please login again to view your settings.
+        </p>
+      </div>
+    );
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4 text-white">
-      <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-xl">
-        <div className="mb-6 text-center">
-          <h1 className="text-3xl font-bold">Login to miniX</h1>
-          <p className="mt-2 text-sm text-slate-400">
-            Welcome back! Please login to continue.
-          </p>
-        </div>
-
-        {!showOtpStep ? (
-          <form onSubmit={handleLogin} className="space-y-4">
-            <Input
-              label="Email"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              placeholder="Enter your email"
-            />
-
-            <Input
-              label="Password"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="Enter your password"
-            />
-
-            <Button type="submit" disabled={loading} className="w-full">
-              {loading ? "Checking security..." : "Login"}
-            </Button>
-          </form>
-        ) : (
-          <form onSubmit={handleVerifyOtp} className="space-y-4">
-            <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 p-4">
-              <h2 className="font-semibold text-sky-300">
-                Chrome OTP Verification
-              </h2>
-              <p className="mt-1 text-sm leading-6 text-slate-300">
-                You are logging in from Google Chrome. Please enter the OTP sent
-                to your registered email address.
-              </p>
-            </div>
-
-            <Input
-              label="OTP"
-              type="text"
-              value={otp}
-              onChange={(event) => setOtp(event.target.value)}
-              placeholder="Enter 6-digit OTP"
-            />
-
-            <Button type="submit" disabled={otpLoading} className="w-full">
-              {otpLoading ? "Verifying..." : "Verify OTP & Login"}
-            </Button>
-
-            <button
-              type="button"
-              onClick={async () => {
-                await signOut(auth);
-                setShowOtpStep(false);
-                setOtp("");
-                toast.success("Login cancelled");
-              }}
-              className="w-full rounded-xl border border-slate-700 px-4 py-3 text-sm font-semibold text-slate-300 transition hover:bg-slate-800"
-            >
-              Cancel login
-            </button>
-          </form>
-        )}
-
-        {!showOtpStep && (
-          <p className="mt-5 text-center text-sm text-slate-400">
-            Don&apos;t have an account?{" "}
-            <Link href="/register" className="font-semibold text-sky-400">
-              Register
-            </Link>
-          </p>
-        )}
+    <div className="min-h-screen text-white">
+      <div className="border-b border-slate-800 p-5">
+        <h1 className="text-2xl font-bold">Settings</h1>
       </div>
-    </main>
+
+      <div className="space-y-6 p-5">
+        <section className="rounded-2xl border border-slate-800 bg-slate-950">
+          <EditProfileForm profile={profile} />
+        </section>
+
+        <LoginHistoryList />
+      </div>
+    </div>
   );
 }

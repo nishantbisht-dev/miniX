@@ -6,17 +6,9 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 function getDeviceIcon(device: LoginHistoryItem["device"]) {
-  if (device === "mobile") {
-    return <Smartphone className="h-5 w-5" />;
-  }
-
-  if (device === "tablet") {
-    return <Tablet className="h-5 w-5" />;
-  }
-
-  if (device === "desktop") {
-    return <Monitor className="h-5 w-5" />;
-  }
+  if (device === "mobile") return <Smartphone className="h-5 w-5" />;
+  if (device === "tablet") return <Tablet className="h-5 w-5" />;
+  if (device === "desktop") return <Monitor className="h-5 w-5" />;
 
   return <Laptop className="h-5 w-5" />;
 }
@@ -78,7 +70,13 @@ export default function LoginHistoryList() {
                     {item.browser} on {item.os}
                   </h3>
 
-                  <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-xs font-semibold text-emerald-400">
+                  <span
+                    className={`rounded-full px-2 py-1 text-xs font-semibold ${
+                      item.status === "success"
+                        ? "bg-emerald-500/10 text-emerald-400"
+                        : "bg-red-500/10 text-red-400"
+                    }`}
+                  >
                     {item.status}
                   </span>
                 </div>
@@ -90,6 +88,12 @@ export default function LoginHistoryList() {
                 <p className="mt-1 text-sm text-slate-400">
                   IP Address: {item.ipAddress}
                 </p>
+
+                {item.reason && (
+                  <p className="mt-1 text-sm text-slate-400">
+                    Reason: {item.reason}
+                  </p>
+                )}
 
                 <p className="mt-1 text-xs text-slate-500">
                   {new Date(item.createdAt).toLocaleString()}

@@ -1,43 +1,15 @@
-import { apiRequest } from "@/lib/api";
+const express = require("express");
+const {
+  checkLoginSecurity,
+  completeChromeLogin,
+} = require("../controllers/loginSecurity.controller");
+const { protect } = require("../middleware/auth.middleware");
 
-export type LoginSecurityAction = "allowed" | "requires_otp" | "blocked";
+const router = express.Router();
 
-export type LoginSecurityResponse = {
-  success: boolean;
-  action: LoginSecurityAction;
-  message: string;
-};
+router.use(protect);
 
-/*
-  Called after Firebase login succeeds.
+router.post("/check", checkLoginSecurity);
+router.post("/complete-chrome-login", completeChromeLogin);
 
-  Backend checks:
-  - browser
-  - device
-  - IP
-  - login rules
-*/
-export async function checkLoginSecurity() {
-  const data = await apiRequest<LoginSecurityResponse>("/login-security/check", {
-    method: "POST",
-  });
-
-  return data;
-}
-
-/*
-  Called when Chrome user enters OTP.
-
-  Backend verifies OTP and saves login history.
-*/
-export async function completeChromeLogin(otp: string) {
-  const data = await apiRequest<LoginSecurityResponse>(
-    "/login-security/complete-chrome-login",
-    {
-      method: "POST",
-      body: JSON.stringify({ otp }),
-    }
-  );
-
-  return data;
-}
+module.exports = router;

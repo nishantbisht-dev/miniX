@@ -7,10 +7,6 @@ const { protect } = require("../middleware/auth.middleware");
 
 const router = express.Router();
 
-/*
-  All login history routes require logged-in user.
-*/
-
 router.use(protect);
 
 router.post("/", saveLoginHistory);
