@@ -2,6 +2,7 @@
 
 import Button from "@/components/common/Button";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import { useTranslation } from "@/hooks/useTranslation";
 import { createPost } from "@/lib/posts";
 import {
   containsNotificationKeyword,
@@ -11,17 +12,9 @@ import { ImageIcon, Smile } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-/*
-  CreatePostBox lets logged-in users create a new text post.
-
-  Task 1 addition:
-  After creating a post, if text contains "cricket" or "science",
-  and user has enabled browser notifications,
-  we show a browser popup notification with full tweet content.
-*/
-
 export default function CreatePostBox() {
   const { profile, profileLoading } = useUserProfile();
+  const { t } = useTranslation();
 
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
@@ -47,15 +40,12 @@ export default function CreatePostBox() {
     try {
       setLoading(true);
 
-      await createPost(text);
+      await createPost(text.trim());
 
       /*
-        Browser Notification API task.
-
-        Conditions:
-        1. User preference must be enabled
-        2. Tweet must contain "cricket" or "science"
-        3. Browser notification permission must already be granted
+        Browser Notification API task:
+        If notification preference is enabled and tweet contains
+        "cricket" or "science", show popup notification.
       */
       if (
         profile.browserNotificationsEnabled &&
@@ -77,8 +67,17 @@ export default function CreatePostBox() {
   return (
     <section className="border-b border-slate-800 p-5">
       <div className="flex gap-4">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sky-500 font-bold text-white">
-          {profile?.name?.charAt(0).toUpperCase() || "U"}
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-sky-500 font-bold text-white">
+          {profile?.photoURL ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={profile.photoURL}
+              alt={profile.name}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            profile?.name?.charAt(0).toUpperCase() || "U"
+          )}
         </div>
 
         <div className="flex-1">
@@ -86,7 +85,7 @@ export default function CreatePostBox() {
             value={text}
             onChange={(event) => setText(event.target.value)}
             placeholder={
-              profileLoading ? "Loading profile..." : "What is happening?"
+              profileLoading ? "Loading profile..." : t("whatIsHappening")
             }
             disabled={profileLoading || loading}
             rows={3}
@@ -98,6 +97,7 @@ export default function CreatePostBox() {
               <button
                 type="button"
                 className="rounded-full p-2 transition hover:bg-sky-500/10"
+                title="Image upload coming soon"
               >
                 <ImageIcon className="h-5 w-5" />
               </button>
@@ -105,6 +105,7 @@ export default function CreatePostBox() {
               <button
                 type="button"
                 className="rounded-full p-2 transition hover:bg-sky-500/10"
+                title="Emoji picker coming soon"
               >
                 <Smile className="h-5 w-5" />
               </button>
@@ -122,9 +123,14 @@ export default function CreatePostBox() {
               <Button
                 type="button"
                 onClick={handleCreatePost}
-                disabled={loading || profileLoading || !text.trim()}
+                disabled={
+                  loading ||
+                  profileLoading ||
+                  !text.trim() ||
+                  charactersLeft < 0
+                }
               >
-                {loading ? "Posting..." : "Post"}
+                {loading ? "Posting..." : t("post")}
               </Button>
             </div>
           </div>

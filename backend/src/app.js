@@ -11,6 +11,10 @@ const notificationRoutes = require("./routes/notification.routes");
 const otpRoutes = require("./routes/otp.routes");
 const loginHistoryRoutes = require("./routes/loginHistory.routes");
 const loginSecurityRoutes = require("./routes/loginSecurity.routes");
+const forgotPasswordRoutes = require("./routes/forgotPassword.routes");
+const audioPostRoutes = require("./routes/audioPost.routes");
+const subscriptionRoutes = require("./routes/subscription.routes");
+const languageRoutes = require("./routes/language.routes");
 
 const { notFound, errorHandler } = require("./middleware/error.middleware");
 
@@ -21,6 +25,7 @@ app.use(morgan("dev"));
 
 const allowedOrigins = [
   "http://localhost:3000",
+  "http://localhost:3001",
   process.env.CLIENT_URL,
 ].filter(Boolean);
 
@@ -64,6 +69,9 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+/*
+  API routes
+*/
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/social", socialRoutes);
@@ -71,7 +79,14 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/otp", otpRoutes);
 app.use("/api/login-history", loginHistoryRoutes);
 app.use("/api/login-security", loginSecurityRoutes);
+app.use("/api/forgot-password", forgotPasswordRoutes);
+app.use("/api/posts/audio", audioPostRoutes);
+app.use("/api/subscriptions", subscriptionRoutes);
+app.use("/api/languages", languageRoutes);
 
+/*
+  Error handlers must always be last.
+*/
 app.use(notFound);
 app.use(errorHandler);
 

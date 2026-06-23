@@ -1,15 +1,29 @@
-const express = require("express");
-const {
-  checkLoginSecurity,
-  completeChromeLogin,
-} = require("../controllers/loginSecurity.controller");
-const { protect } = require("../middleware/auth.middleware");
+import { apiRequest } from "@/lib/api";
 
-const router = express.Router();
+export type LoginSecurityAction = "allowed" | "requires_otp" | "blocked";
 
-router.use(protect);
+export type LoginSecurityResponse = {
+  success: boolean;
+  action: LoginSecurityAction;
+  message: string;
+};
 
-router.post("/check", checkLoginSecurity);
-router.post("/complete-chrome-login", completeChromeLogin);
+export async function checkLoginSecurity() {
+  const data = await apiRequest<LoginSecurityResponse>("/login-security/check", {
+    method: "POST",
+  });
 
-module.exports = router;
+  return data;
+}
+
+export async function completeChromeLogin(otp: string) {
+  const data = await apiRequest<LoginSecurityResponse>(
+    "/login-security/complete-chrome-login",
+    {
+      method: "POST",
+      body: JSON.stringify({ otp }),
+    }
+  );
+
+  return data;
+}

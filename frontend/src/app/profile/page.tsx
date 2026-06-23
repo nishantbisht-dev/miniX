@@ -1,53 +1,60 @@
 "use client";
 
+import AppLayout from "@/components/layout/AppLayout";
 import EditProfileForm from "@/components/profile/EditProfileForm";
-import LoginHistoryList from "@/components/profile/LoginHistoryList";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import { Loader2 } from "lucide-react";
+import { Loader2, User } from "lucide-react";
 
 export default function ProfilePage() {
   const { profile, profileLoading } = useUserProfile();
 
-  if (profileLoading) {
-    return (
-      <main className="min-h-screen bg-slate-950 px-4 py-8 text-white">
-        <div className="mx-auto flex max-w-3xl items-center justify-center rounded-2xl border border-slate-800 bg-slate-900 p-10">
-          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-          Loading profile...
-        </div>
-      </main>
-    );
-  }
-
-  if (!profile) {
-    return (
-      <main className="min-h-screen bg-slate-950 px-4 py-8 text-white">
-        <div className="mx-auto max-w-3xl rounded-2xl border border-slate-800 bg-slate-900 p-6 text-center">
-          <h1 className="text-xl font-bold">Profile not found</h1>
-          <p className="mt-2 text-slate-400">
-            Please login again to view your profile.
-          </p>
-        </div>
-      </main>
-    );
-  }
-
   return (
-    <main className="min-h-screen bg-slate-950 px-4 py-8 text-white">
-      <div className="mx-auto max-w-3xl space-y-6">
-        <section className="rounded-2xl border border-slate-800 bg-slate-900">
-          <div className="border-b border-slate-800 p-5">
-            <h1 className="text-2xl font-bold text-white">Profile Settings</h1>
-            <p className="mt-1 text-sm text-slate-400">
-              Update your profile and view account activity.
-            </p>
+    <AppLayout>
+      <div className="min-h-screen pb-24 xl:pb-0">
+        <header className="sticky top-0 z-30 border-b border-slate-800 bg-slate-950/95 px-4 py-4 backdrop-blur sm:px-5">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-sky-400">
+              <User className="h-5 w-5" />
+            </div>
+
+            <div className="min-w-0">
+              <h1 className="text-xl font-black text-white sm:text-2xl">
+                Profile
+              </h1>
+              <p className="mt-1 text-sm leading-5 text-slate-500">
+                View and update your profile information.
+              </p>
+            </div>
           </div>
+        </header>
 
-          <EditProfileForm profile={profile} />
-        </section>
+        {profileLoading ? (
+          <div className="p-4 sm:p-5">
+            <div className="flex items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900/40 p-5 text-slate-400">
+              <Loader2 className="h-5 w-5 animate-spin" />
+              <span>Loading profile...</span>
+            </div>
+          </div>
+        ) : !profile ? (
+          <div className="p-4 sm:p-5">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
+              <h2 className="text-lg font-bold text-white">
+                Profile not found
+              </h2>
 
-        <LoginHistoryList />
+              <p className="mt-2 text-sm leading-6 text-slate-400">
+                Please logout and login again to reload your profile.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-5 p-4 sm:p-5">
+            <section className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-950">
+              <EditProfileForm profile={profile} />
+            </section>
+          </div>
+        )}
       </div>
-    </main>
+    </AppLayout>
   );
 }

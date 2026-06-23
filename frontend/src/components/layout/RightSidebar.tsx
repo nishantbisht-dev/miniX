@@ -1,1 +1,25 @@
-export default function RightSidebar(){ return <aside className="sticky top-0 hidden h-screen p-5 lg:block"><div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-5"><h2 className="font-bold">What is happening</h2><div className="mt-4 space-y-3 text-sm text-slate-400"><p>#Nextjs</p><p>#FirebaseAuth</p><p>#MongoDB</p><p>#BuildInPublic</p></div></div></aside>; }
+"use client";
+
+export default function RightSidebar() {
+  return (
+    <aside className="sticky top-0 hidden h-screen w-80 shrink-0 overflow-y-auto bg-slate-950 px-6 py-6 xl:block">
+      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+        <h2 className="text-lg font-bold text-white">What is happening</h2>
+
+        <div className="mt-5 space-y-4">
+          {["#Nextjs", "#FirebaseAuth", "#MongoDB", "#BuildInPublic"].map(
+            (tag) => (
+              <button
+                key={tag}
+                type="button"
+                className="block w-full rounded-xl px-3 py-2 text-left text-sm font-medium text-slate-400 transition hover:bg-slate-800 hover:text-white"
+              >
+                {tag}
+              </button>
+            )
+          )}
+        </div>
+      </div>
+    </aside>
+  );
+}

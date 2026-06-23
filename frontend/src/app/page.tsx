@@ -1,3 +1,53 @@
-import { APP_DESCRIPTION, APP_NAME } from "@/constants/app";
-import Link from "next/link";
-export default function Home(){ return <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-white"><section className="max-w-2xl text-center"><h1 className="text-5xl font-black text-sky-400">{APP_NAME}</h1><p className="mt-5 text-lg text-slate-300">{APP_DESCRIPTION}</p><div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row"><Link href="/register" className="rounded-full bg-sky-500 px-6 py-3 font-semibold hover:bg-sky-400">Create account</Link><Link href="/login" className="rounded-full border border-slate-700 px-6 py-3 font-semibold hover:bg-slate-900">Login</Link></div></section></main>; }
+"use client";
+
+import EmptyState from "@/components/common/EmptyState";
+import Loader from "@/components/common/Loader";
+import AppLayout from "@/components/layout/AppLayout";
+import AudioTweetBox from "@/components/posts/AudioTweetBox";
+import CreatePostBox from "@/components/posts/CreatePostBox";
+import FeedHeader from "@/components/posts/FeedHeader";
+import PostCard from "@/components/posts/PostCard";
+import { listenToPosts } from "@/lib/posts";
+import type { Post } from "@/types";
+import { MessageSquareText } from "lucide-react";
+import { useEffect, useState } from "react";
+
+export default function HomePage() {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = listenToPosts((latestPosts: Post[]) => {
+      setPosts(latestPosts);
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  return (
+    <AppLayout>
+      <FeedHeader />
+
+      <div className="pb-24 xl:pb-0">
+        <CreatePostBox />
+
+        <AudioTweetBox />
+
+        <section>
+          {loading ? (
+            <Loader text="Loading posts..." />
+          ) : posts.length > 0 ? (
+            posts.map((post) => <PostCard key={post.id} post={post} />)
+          ) : (
+            <EmptyState
+              icon={<MessageSquareText className="h-7 w-7" />}
+              title="No posts yet"
+              description="Be the first to post something on miniX."
+            />
+          )}
+        </section>
+      </div>
+    </AppLayout>
+  );
+}
