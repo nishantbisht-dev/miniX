@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const razorpay = require("../config/razorpay");
+const getRazorpayInstance = require("../config/razorpay");
 const User = require("../models/User");
 const Subscription = require("../models/Subscription");
 const Invoice = require("../models/Invoice");
@@ -66,8 +66,8 @@ async function sendSubscriptionInvoiceEmail({
       <p><strong>Razorpay Order ID:</strong> ${orderId}</p>
       <p><strong>Razorpay Payment ID:</strong> ${paymentId}</p>
       <p><strong>Valid Until:</strong> ${new Date(expiresAt).toLocaleDateString(
-        "en-IN"
-      )}</p>
+    "en-IN"
+  )}</p>
 
       <p>Thank you for using miniX.</p>
     </div>
@@ -165,6 +165,8 @@ async function createRazorpayOrder(req, res, next) {
     }
 
     const planDetails = SUBSCRIPTION_PLANS[plan];
+
+    const razorpay = getRazorpayInstance();
 
     const order = await razorpay.orders.create({
       amount: planDetails.price * 100,
